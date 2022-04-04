@@ -12,12 +12,20 @@ public class Stopwatch {
     }
 
     void tick() {
-        //TODO
+        seconds += 1;
+        if (seconds == 60) {
+            seconds = 0;
+            minutes += 1;
+        }
+        if (minutes == 60) {
+            minutes = 0;
+            hours += 1;
+        }
     }
 
     @NonNull
     @Override
     public String toString() {
-        return String.format(Locale.getDefault(),"%02d:%02d:%02d", hours,minutes,seconds);
+        return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
     }
 }
