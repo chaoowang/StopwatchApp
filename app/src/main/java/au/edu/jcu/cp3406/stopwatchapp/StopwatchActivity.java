@@ -1,8 +1,10 @@
 package au.edu.jcu.cp3406.stopwatchapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
@@ -21,6 +23,7 @@ public class StopwatchActivity extends AppCompatActivity {
     private Button start_button;
     private String start_text = "start";
     private String stop_text = "stop";
+    private int speed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +31,7 @@ public class StopwatchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         display = findViewById(R.id.time);
         start_button = findViewById(R.id.start);
+        speed = 1000;
 
         if (savedInstanceState == null) {
             time = new Stopwatch();
@@ -35,6 +39,7 @@ public class StopwatchActivity extends AppCompatActivity {
             int hours = savedInstanceState.getInt("hours");
             int minutes = savedInstanceState.getInt("minutes");
             int seconds = savedInstanceState.getInt("seconds");
+            speed = savedInstanceState.getInt("speed");
             time = new Stopwatch(hours, minutes, seconds);
             boolean running = savedInstanceState.getBoolean("running");
             display.setText(time.toString());
@@ -52,6 +57,7 @@ public class StopwatchActivity extends AppCompatActivity {
         outState.putInt("minutes", time.getMinutes());
         outState.putInt("seconds", time.getSeconds());
         outState.putBoolean("running", isRunning);
+        outState.putInt("speed",speed);
     }
 
     private void enableStopwatch() {
@@ -64,7 +70,7 @@ public class StopwatchActivity extends AppCompatActivity {
                 if (isRunning) {
                     time.tick();
                     display.setText(time.toString());
-                    handler.postDelayed(this, 1000);
+                    handler.postDelayed(this, speed);
                 }
             }
         });
@@ -86,6 +92,20 @@ public class StopwatchActivity extends AppCompatActivity {
     }
 
     public void settingClicked(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivityForResult(intent, SettingsActivity.SETTINGS_REQUEST);
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == SettingsActivity.SETTINGS_REQUEST){
+            if (resultCode == RESULT_OK){
+                if (data != null){
+                    speed = data.getIntExtra("speed", 1000);
+                }
+            }
+        }
     }
 }
