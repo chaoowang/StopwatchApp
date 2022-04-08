@@ -84,4 +84,56 @@ protected void onCreate(Bundle savedInstanceState) {
     }
 ```
 ## SettingActivity
-### to be update...
+The settingActivity gets user input as the speed for the timer.
+### SettingActivity
+#### SETTING_REQUEST
+In the SettingActivity, a unique integer is required as a symbolic constant. In this case, the symbolic is named SETTING_REQUEST.
+```
+public class SettingsActivity extends AppCompatActivity {
+
+    public static int SETTINGS_REQUEST = 1234;
+    private EditText input_speed;
+    ...
+}
+```
+#### doneClick
+In doneClick, a intent is created to hold information to return as a result from SettingActivity.  
+setResult() is used to set the result status(RESULT_OK) amd the result itself.
+finish() will programmatically terminates an activity.
+```
+public void doneClicked(View view) {
+        String text = input_speed.getText().toString();
+        int speed = Integer.parseInt(text);
+
+        Intent data = new Intent();
+        data.putExtra("speed", speed);
+        setResult(RESULT_OK, data);
+        finish();
+    }
+```
+#### connect settings activity to main activity
+Back in StopwatchActivity(main activity), the following methods are added to link the settings activity with the main activity.
+##### settingClicked
+In the settingClicked the startActivityForResult() will starts the SettingsActivity and gets the result back.
+```
+public void settingClicked(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivityForResult(intent, SettingsActivity.SETTINGS_REQUEST);
+    }
+```
+##### onActivityResult
+The onActivityResult will grabs the content choosen by checking the request code(SETTING_REQUEST) and the result code(RESULT_OK).
+```
+protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == SettingsActivity.SETTINGS_REQUEST){
+            if (resultCode == RESULT_OK){
+                if (data != null){
+                    speed = data.getIntExtra("speed", 1000);
+                }
+            }
+        }
+    }
+```
+** Noted that startActivityForResult and onActivityResult has been both deprecated after androidx.activity:activity:1.2.0-alpha02.
